@@ -859,7 +859,7 @@ How to work:
       else{d.textContent="✓ "+r.label+" ";b.textContent="Undo";b.onclick=async()=>{b.disabled=true;try{await r.undo();b.textContent="Undone"}catch(e){b.textContent="Couldn't undo"}}}
       d.appendChild(b);box.appendChild(d)});
   }
-  const ERR={not_granted:"You declined Claude for this page. Reload and allow it to use Ask.",sampling_disabled:"Claude isn't available for this account here.",rate_limited:"Too many questions at once or a usage limit was hit. Try again in a bit.",tools_unavailable:"This app version can't run the page tools. Update the Claude app.",session_expired:"Sign in to claude.ai again.",refused:"Claude declined that one. Try rewording.",prompt_too_large:"That was too much at once. Start a new question."};
+  const ERR={not_granted:"You declined Claude for this page. Reload and allow it to use Ask.",sampling_disabled:"Claude isn't available for this account here.",rate_limited:"Too many questions at once or a usage limit was hit. Try again in a bit.",tools_unavailable:"This app version can't run the page tools. Update the Claude app.",session_expired:"Sign in to claude.ai again.",refused:"Claude declined that one. Try rewording.",prompt_too_large:"That was too much at once. Start a new question.",upstream_error:"Claude had a temporary problem. Ask again in a moment.",empty_completion:"Claude came back empty. Try asking a little differently.",invalid_request:"This page sent Claude a request it couldn't read.",capability_disabled:"Claude isn't usable in this view. Open the page in claude.ai or the Claude app."};
 
   async function ask(){
     const text=q.value.trim();if(!text||busy)return;
@@ -872,14 +872,24 @@ How to work:
     while(TURNS.length>14)TURNS.splice(0,2);
     try{
       const ctxNoTools=canTools?"":"\n\nThis app version can't run page tools, so here is a snapshot instead. Pipeline: "+JSON.stringify(TOOLS[0].execute())+"\nTop 40 roles by match: "+JSON.stringify(filterJobs({}).slice(0,40).map(row))+"\nContacts: "+JSON.stringify(TOOLS.find(t=>t.name==="list_contacts").execute({}));
-      const {text:ans,truncated}=await sample([{role:"user",content:RULES()+ctxNoTools},...TURNS],{cache:false,signal:ctl.signal,...(canTools?{tools:TOOLS}:{}),modelTier:"default",
-        onText:({text})=>{box.innerHTML=md(text)}});
+      const onText=({text})=>{try{box.innerHTML=md(text)}catch(_){box.textContent=text}};
+      const snapshot=()=>"\n\nThis answer has no page tools, so here is a snapshot instead. Pipeline: "+JSON.stringify(TOOLS[0].execute())+"\nTop 40 roles by match: "+JSON.stringify(filterJobs({}).slice(0,40).map(row))+"\nContacts: "+JSON.stringify(TOOLS.find(t=>t.name==="list_contacts").execute({}));
+      let res;
+      try{res=await sample([{role:"user",content:RULES()+ctxNoTools},...TURNS],{cache:false,signal:ctl.signal,...(canTools?{tools:TOOLS}:{}),modelTier:"default",onText})}
+      catch(e1){
+        /* One fallback, never a loop: if the tool-using call failed before any text, ask once more with a snapshot of the page instead of tools. */
+        if(!canTools||!e1||e1.text||["cancelled","not_granted","sampling_disabled","rate_limited","session_expired","refused","not_declared"].includes(e1.code))throw e1;
+        console.warn("Ask: tool call failed, retrying once without tools",e1&&e1.code,e1&&e1.message);
+        prog("Retrying without page tools…");
+        res=await sample([{role:"user",content:RULES()+snapshot()},...TURNS],{cache:false,signal:ctl.signal,modelTier:"default",onText});
+      }
+      const {text:ans,truncated}=res;
       TURNS.push({role:"assistant",content:ans+(shown.length?"\n[Shown cards: "+shown.join(", ")+"]":"")});
       finish(box,ans+(truncated?"\n\n(Cut short. Ask a narrower question for the rest.)":""),shown,receipts);
     }catch(e){
       TURNS.pop();
       if(e&&e.code==="cancelled")finish(box,(e.text||"")+"\n\n(Stopped.)",shown,receipts);
-      else{finish(box,(e&&e.code!=="refused"&&e.text)||"",shown,receipts);const n=document.createElement("div");n.className="note";n.textContent=ERR[e&&e.code]||"Something went wrong reaching Claude. Try again.";box.appendChild(n)}
+      else{console.warn("Ask failed",e&&e.code,e&&e.message,e);finish(box,(e&&e.code!=="refused"&&e.text)||"",shown,receipts);const n=document.createElement("div");n.className="note";n.textContent=(ERR[e&&e.code]||(e&&e.code?"Claude had a problem answering. Ask again in a moment.":"Something on this page broke while answering. Ask again; if it repeats, tell Claude in chat."))+(e&&(e.code||e.message)?" ("+String(e.code||e.message).slice(0,80)+")":"");box.appendChild(n)}
     }finally{busy=false;go.disabled=false;stop.hidden=true;progEl=null;q.focus()}
   }
 
