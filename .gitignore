@@ -8,3 +8,5 @@ db/
 contacts_out/
 fails.json
 .DS_Store
+scripts/showcase/demo.json
+node_modules/

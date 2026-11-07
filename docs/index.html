@@ -26,6 +26,7 @@ h1{font-size:clamp(32px,6vw,52px);line-height:1.08;letter-spacing:-.02em;margin:
 .btns{display:flex;gap:12px;flex-wrap:wrap}
 .btn{display:inline-block;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--line);color:var(--fg);background:var(--card)}
 .btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.shot img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px;margin:40px 0 0;box-shadow:0 10px 30px rgba(0,0,0,.08)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:44px 0 0}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
 .stat b{display:block;font-size:26px;letter-spacing:-.02em}
@@ -63,6 +64,7 @@ footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid 
     <a class="btn p" href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">Set it up in 15 minutes</a>
     <a class="btn" href="https://github.com/dev-null-k2/rolewright-job-agent">View the code</a>
   </div>
+  <picture class="shot"><source media="(prefers-color-scheme: dark)" srcset="media/home-dark.png"><img src="media/home-light.png" alt="The Rolewright tracker with fictional demo data: pipeline, Ask box and best matches" loading="lazy"></picture>
   <div class="stats">
     <div class="stat"><b>~270</b><span>job boards scanned</span></div>
     <div class="stat"><b>2&times;</b><span>scans a day</span></div>
@@ -97,9 +99,19 @@ footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid 
   </div>
 </div></section>
 
+<section id="see"><div class="w">
+  <h2>See it work</h2>
+  <p class="sub">The real tracker page with fictional demo data.</p>
+  <div class="grid" style="grid-template-columns:1fr">
+    <div class="card"><h3>Today's 10, one role at a time</h3><picture class="shot"><source media="(prefers-color-scheme: dark)" srcset="media/focus-dark.png"><img src="media/focus-light.png" alt="Focus mode with a checked message and Email, LinkedIn and Skip buttons" loading="lazy"></picture></div>
+    <div class="card"><h3>A tailored resume with every change marked</h3><picture class="shot"><source media="(prefers-color-scheme: dark)" srcset="media/resume-dark.png"><img src="media/resume-light.png" alt="Tailored resume with additions in green and removals in red" loading="lazy"></picture></div>
+  </div>
+</div></section>
+
 <section id="how"><div class="w">
   <h2>How it runs</h2>
   <p class="sub">No servers, no API keys, no extra bill. Everything runs inside your Claude account.</p>
+  <picture class="shot" style="margin-bottom:24px"><source media="(prefers-color-scheme: dark)" srcset="media/how-dark.svg"><img src="media/how-light.svg" alt="How Rolewright runs" loading="lazy" style="border:0;box-shadow:none;margin:0 0 24px"></picture>
   <div class="grid">
     <div class="card"><h3>The tracker</h3><p>A private Claude artifact (<code>app/rolewright.html</code>) with its own small database.</p></div>
     <div class="card"><h3>The agent</h3><p>Three Claude scheduled tasks that follow <code>agent/RUNBOOK.md</code> and the Python scripts beside it.</p></div>
@@ -111,10 +123,9 @@ footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid 
   <h2>Set up in about 15 minutes</h2>
   <p class="sub">You need a paid Claude plan with the desktop app and a Gmail account. No coding.</p>
   <ol class="steps">
-    <li><b>Download Rolewright</b><span>On GitHub click <b>Code &rarr; Download ZIP</b> and unzip it.</span></li>
-    <li><b>Connect Gmail</b><span>Claude desktop app &rarr; Settings &rarr; Connectors &rarr; Gmail. Read-only: Rolewright never sends, labels or deletes mail.</span></li>
-    <li><b>Create a Claude Project</b><span>Call it <b>Job search</b>. Leave it empty; Claude fills it.</span></li>
-    <li><b>Let Claude set it up</b><span>Start a Cowork task in that project, attach the folder and your resume, and paste the message from <a href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">SETUP.md</a>. Claude asks a few questions, publishes your tracker, schedules the scans and runs the first one.</span></li>
+        <li><b>Connect Gmail</b><span>Claude desktop app &rarr; Settings &rarr; Connectors &rarr; Gmail. Read-only: Rolewright never sends, labels or deletes mail.</span></li>
+    <li><b>Create a Claude Project</b><span>Call it &ldquo;Job search&rdquo;. Leave it empty; Claude fills it.</span></li>
+    <li><b>Let Claude set it up</b><span>Start a Cowork task in that project, attach your resume, and paste the one setup prompt from the <a href="https://github.com/dev-null-k2/rolewright-job-agent#set-up-with-one-prompt">README</a>. Claude fetches Rolewright, asks a few questions, publishes your tracker, schedules the scans and runs the first one.</span></li>
     <li><b>Optional: LinkedIn, Indeed, Glassdoor</b><span>Turn on their job-alert emails to the same Gmail and upload your LinkedIn connections export for warm intros. Rolewright never logs in to any job site.</span></li>
   </ol>
 </div></section>

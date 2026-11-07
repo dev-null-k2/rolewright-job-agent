@@ -13,9 +13,10 @@ Each scan uses your normal Claude usage, like any other task. There is nothing e
 
 ---
 
-## Step 1. Download Rolewright
-On [the GitHub page](https://github.com/dev-null-k2/rolewright-job-agent) click the green **Code** button, then
-**Download ZIP**. Unzip it somewhere you can find it, for example your Downloads folder.
+## Step 1. Nothing to download
+Claude fetches Rolewright from GitHub itself in step 4. If it ever can't, download it here: the green **Code**
+button on [the GitHub page](https://github.com/dev-null-k2/rolewright-job-agent), then **Download ZIP**, and attach
+the ZIP in step 4.
 
 ## Step 2. Connect Gmail to Claude
 1. In the Claude desktop app open **Settings → Connectors**.
@@ -32,18 +33,24 @@ the tracker. Everything else works without it.
 1. In Claude open **Projects → New project**. Name it **Job search**.
 2. Leave it empty. Claude adds the files in the next step.
 
-## Step 4. Let Claude set everything up
+## Step 4. Let Claude set everything up (one prompt)
 1. In the desktop app open **Cowork**, start a **new task**, and choose the **Job search** project for it.
-2. Attach the **unzipped Rolewright folder** (or the ZIP) and **your resume**.
+2. Attach **your resume**.
 3. Paste this message and send it:
 
-> Set up Rolewright for me from the attached folder. Follow SETUP.md, "What Claude does in step 4", exactly.
-> My resume is attached.
+```text
+Set up Rolewright for me end to end. Get it from https://github.com/dev-null-k2/rolewright-job-agent
+(clone it, or ask me to attach the ZIP if you can't reach GitHub). Read SETUP.md and do everything under
+"What Claude does in step 4": ask me the few questions it lists, write my profile from my attached resume
+only, save the files to this project, publish my Rolewright tracker, create the three scheduled tasks in my
+time zone, run the first job scan, and open the tracker for me when it's done. Never invent anything that
+isn't on my resume.
+```
 
-Claude will ask you a few short questions (your target roles, cities or remote, time zone, links, and anything it
-must never mention). Then it does the rest by itself. It takes about 20 minutes, mostly the first scan.
+Claude asks a few short questions (your target roles, cities or remote, time zone, links, and anything it must
+never mention). Then it does the rest by itself. It takes about 20 minutes, mostly the first scan.
 
-When it finishes, Claude gives you a link to your **Rolewright** tracker. Open it and press **F** for Today's 10.
+When it finishes, Claude opens your **Rolewright** tracker. Press **F** for Today's 10.
 
 ## Step 5. Optional extras (recommended)
 - **LinkedIn, Indeed and Glassdoor jobs.** Rolewright never logs in to these sites. Turn on their **job-alert
@@ -57,7 +64,7 @@ When it finishes, Claude gives you a link to your **Rolewright** tracker. Open i
   who you know at each company and drafts the referral ask.
 - **LinkedIn hiring posts.** Nothing to set up. Each scan finds recent public "we're hiring" posts through web search
   and drafts a message to the poster for you to send yourself.
-- **Apply kit.** On the tracker's **Apply kit** tab, fill in salary, start date and work setup once. They are then
+- **Apply kit.** On the tracker's **Apply kit** tab, add the phone number for your email signature (it stays in your browser only), and fill in salary, start date and work setup once. They are then
   ready to copy into any application form.
 
 ---
@@ -97,6 +104,8 @@ site, and never sends anything for you.
 ## What Claude does in step 4
 These are the instructions Claude follows when you paste the setup message. You don't need to read them.
 
+0. **Get the files**: `git clone https://github.com/dev-null-k2/rolewright-job-agent` (or unzip the attached ZIP) and work from that folder.
+
 1. **Ask the candidate** (one short message, multiple choice where possible): target role types in order; cities
    and/or US remote; time zone; LinkedIn, GitHub and best-project links (optional); anything never to mention
    (their city and state are always included). Use their answers and the attached resume only. Never invent a role,
@@ -126,5 +135,5 @@ These are the instructions Claude follows when you paste the setup message. You 
 7. **Finish the profile**: put the artifact URL and the job-scan and inbox-watch task ids into `profile.json`
    (`trackerUrl`, `scanTaskId`, `inboxTaskId`), save it back to `rolewright/profile.json`, and set `meta/profile` in
    the tracker to the same JSON with `areas` copied from `search.areas`.
-8. **Run the job scan once now.** When it finishes, open the tracker for the candidate and tell them in two lines how
+8. **Run the job scan once now** (fire the job-scan task, or follow its prompt directly in this session). When it finishes, open the tracker for the candidate with the Artifact tool and tell them in two lines how
    to use it: press F for Today's 10, and fill the Apply kit once.
