@@ -183,7 +183,7 @@ details.more{display:flex;flex-wrap:wrap;gap:8px;align-items:center}details.more
     </form>
     <div class="list" id="contacts"></div>
   </section>
-  <section id="v-answers" hidden><div class="live"><h3>Application answers</h3><p>Ready answers to the questions most application forms ask, written only from your resume. Edit any answer and save it; the ones marked "fill once" need your own words. Each role's own "Why this company?" answer and cover letter are on its card.</p><div class="list" id="answers"></div></div></section>
+  <section id="v-answers" hidden><div class="live"><h3>Application answers</h3><p>Ready answers to the questions most application forms ask, written only from your resume. Edit any answer and save it; the ones marked "fill once" need your own words. Each role's own "Why this company?" answer and cover letter are on its card.</p><div id="phonebox" class="row" style="margin:8px 0 12px"></div><div class="list" id="answers"></div></div></section>
   <section id="v-posts" hidden><div class="list" id="posts"></div></section>
 </div>
 <div class="focus" id="focus" hidden role="dialog" aria-modal="true" aria-label="Today's 10"><div class="fwrap">
@@ -241,7 +241,30 @@ window.__rerender=()=>{S.jobs.forEach(fixJob);render()};
 function firstEmail(s){return (String(s||"").match(/[\w.+-]+@[\w-]+\.[\w.]+/)||[""])[0]}
 function personal(d,name){const f=String(name||"").trim().split(/\s+/)[0];const t=String(d||"");return f?t.replace(/\[Name\]/g,f):t.replace(/^Hi \[Name\],/,"Hi,").replace(/\s*\[Name\]/g,"")}
 function cleanCo(c){c=String(c||"").replace(/,?\s*(inc|llc|l\.l\.c|corp|corporation|ltd|co)\.?$/i,"").trim();return c&&c===c.toLowerCase()?c.replace(/\b\w/g,m=>m.toUpperCase()):c}
-function subjectFor(j){return j.subject||((j.title||"").replace(/\s*\((contractor|full time|part time|third party)[^)]*\)/ig,"").trim()+" role – "+NAME())}
+/* Every "Email ..." button opens Gmail with a complete email: greeting, the checked message, the ask on its own line,
+   a line saying the resume is attached (attach it yourself in Gmail), and a signature from your profile.
+   The phone number is kept only in this browser (Apply kit tab), never in the tracker's database. */
+function myPhone(){try{return localStorage.getItem("rw_phone")||""}catch(e){return ""}}
+function setPhone(v){try{localStorage.setItem("rw_phone",String(v||"").trim())}catch(e){}}
+const RESUME_OFFER=/\s*[^.?!]*\b(resume|cv)\b[^.?!]*\b(send|share|ready|attach|forward)\w*\b[^.?!]*[.?!]|\s*[^.?!]*\b(send|share|attach|forward)\w*\b[^.?!]*\b(resume|cv)\b[^.?!]*[.?!]/gi;
+function cleanTitle(t){let s=String(t||"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"").replace(/[*_#]+/g,"");
+  s=s.replace(/\([^)]*\)?/g,m=>/\b(HN|client|w2|c2c|1099|only|remote|hybrid|on-?site|locals?|openings?|contract|contractor|full[ -]?time|part[ -]?time|third party|\d{3,})\b/i.test(m)||/[-–]\s*(SF|NYC|NY)\s*\)/i.test(m)?"":m);
+  s=s.replace(/^\s*(hiring|urgent|immediate need|direct client|new|hot)\s*:\s*/i,"");
+  const seg=s.split(/\s+(?:-{1,2}|–|—|\||@)\s+|-{2,}|\s+-(?=\S)|(?<=\S)-\s+/).map(x=>x.trim()).filter(Boolean);
+  const ROLE=/\b(engineer|developer|architect|scientist|analyst|consultant|specialist|lead|manager|programmer|administrator|designer|sre|devops)\b/i;
+  let r=seg.find(x=>ROLE.test(x))||seg[0]||s;
+  r=r.replace(/[-\s]*\bonly\b\s*/ig," ").replace(/\b(w2|c2c|remote|on-?site|hybrid)\b/ig,"").replace(/\s*\/\s*(NYC|SF|NY|Remote)\s*$/i,"").replace(/\s{2,}/g," ").replace(/^[\s,:;/-]+|[\s,:;/(-]+$/g,"").trim();
+  return r.replace(/(\w)\(/g,"$1 (")}
+function subjectFor(j){return (cleanTitle(j&&j.title)||"Open role")+" – "+NAME()}
+function emailBody(text,name,o={}){
+  const f=String(name||"").trim().split(/\s+/)[0];
+  let t=String(text||"").trim().replace(/^Hi\s*(\[Name\]|[A-Z][\w'’-]*)?\s*,\s*/,"").replace(/\s*\[Name\]/g,"").replace(RESUME_OFFER,"").trim();
+  t=t.charAt(0).toUpperCase()+t.slice(1);
+  let link="";if(P.portfolioLink){const i=t.lastIndexOf(P.portfolioLink);if(i>=0&&!t.slice(i+P.portfolioLink.length).trim().replace(/^\./,"")){link=P.portfolioLink;t=t.slice(0,i).trim()}}
+  const parts=t.split(/(?<=[.?!])\s+(?=[A-Z0-9"'(])/);const ask=parts.length>2&&/\?$/.test(parts[parts.length-1])?parts.pop():"";
+  const greet=f?`Hi ${f},`:(o.inbox?"Hello Hiring Team,":"Hello,");
+  const sig=["Best regards",NAME(),[myPhone(),P.email].filter(Boolean).join(" | "),[P.linkedin,P.github].filter(Boolean).join(" | ")].filter(Boolean);
+  return [greet,parts.join(" ")+(ask?"\n\n"+ask:"")+(link?"\n\nSome of my work: "+link:""),o.followUp?"I've attached my resume again for your reference.":"I've attached my resume for your reference.",sig[0]+",\n"+sig.slice(1).join("\n")].join("\n\n")}
 function personalCo(j){return j}
 function gmailURL(to,su,body){return "https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1"+(to?"&to="+encodeURIComponent(to):"")+"&su="+encodeURIComponent(su||"")+"&body="+encodeURIComponent(body||"")}
 const coKey=j=>String(j.companyName||cleanCo(j.company)).toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -295,7 +318,7 @@ function coverProblems(j,field){const t=String(j[field]||"").trim();if(!t)return
   if(MASTER){const mn=new Set((MASTER.match(/\d[\d,.]*[%+]?/g)||[]).map(n=>n.replace(/[.,%+]+$/,"")));const ex=new Set(((j.companyName||"")+" "+(j.title||"")).match(/\d+/g)||[]);
     (t.replace(/github\.com\/\S+|linkedin\.com\/\S+|Fortune 500/g,"").match(/(?<![\w-])\d[\d,.]*[%+]?/g)||[]).forEach(n=>{const k=n.replace(/[.,%+]+$/,"");if(!mn.has(k)&&!ex.has(k)&&!/^20\d\d$/.test(k))p.push('number "'+n+'" not in your resume')})}
   (P.neverClaim||[]).forEach(w=>{if(new RegExp("\\b"+reEsc(w)+"\\b").test(t))p.push("mentions "+w)});return p}
-function renderAnswers(){const el=$("#answers");if(!el)return;const items=(S.answers&&S.answers.items)||[];
+function renderAnswers(){const el=$("#answers");if(!el)return;const ph=document.getElementById("phonebox");if(ph&&!ph.dataset.on){ph.dataset.on=1;ph.innerHTML=`<label class="meta"><b>Phone for your email signature</b> (kept only in this browser) <input id="phonein" type="tel" placeholder="e.g. 555-123-4567" value="${esc(myPhone())}" style="margin-left:6px"></label> <button class="btn" id="phonesave">Save</button> <span class="meta" id="phonemsg"></span>`;document.getElementById("phonesave").onclick=()=>{setPhone(document.getElementById("phonein").value);document.getElementById("phonemsg").textContent="Saved. Every email now ends with it.";render&&render()}}const items=(S.answers&&S.answers.items)||[];
   el.innerHTML=items.length?items.map(it=>`<article class="card"><div class="title">${esc(it.q)}</div>${it.yours?`<div class="note">${esc(it.hint||"Answer this yourself.")}</div>`:`<textarea data-ans="${esc(it.id)}" rows="${Math.min(10,Math.max(3,Math.ceil(String(it.a||"").length/90)))}" placeholder="${esc(it.hint||"")}">${esc(it.a||"")}</textarea><div class="row">${it.fillOnce&&!it.a?'<span class="pill warn">fill once</span>':""}<button class="btn" data-anscopy="${esc(it.id)}">Copy</button><button class="btn" data-anssave="${esc(it.id)}">Save</button></div>`}</article>`).join(""):'<div class="empty">Loading your answers…</div>'}
 function hpCard(h){const bad=draftProblems({...h,subject:"Hiring post – "+NAME()},h.draft).filter(x=>!/subject/.test(x));
   return `<article class="card"><div class="row"><span class="co">${esc(h.company||"LinkedIn post")}</span>${h.role?`<span class="pill">${esc(h.role)}</span>`:""}${h.area?`<span class="meta">${esc(h.area)}</span>`:""}<span class="meta">posted ${esc(ago(h.postedAt))}</span>${h.status&&h.status!=="new"?statusPill(h.status):""}</div>
@@ -328,7 +351,7 @@ function renderFocus(){const el=$("#fbody");if(!F.open)return;
   if(F.i>=F.q.length){const sent=Object.values(F.mark).filter(x=>x==="sent").length,sk=Object.values(F.mark).filter(x=>x==="skip").length;
     el.innerHTML=`<div class="fcard"><div class="ttl">Bench cleared</div><p>You sent <b>${sent}</b> and skipped <b>${sk}</b> of ${F.q.length}. Follow-ups are set for 7 days out.</p><div class="factions"><button class="btn brass" data-f="more">Ten more <kbd>M</kbd></button><button class="btn" data-f="close">Done <kbd>Esc</kbd></button></div></div>`;return}
   const j=S.jobs.find(x=>x.id===F.q[F.i]);if(!j){fmove(1);return}
-  const v=mainFor(j)||j,c=ctc(j,v),em=firstEmail(c.contactEmail),first=String(c.contactName||"").split(/\s+/)[0],msg=personal(v.draft,c.contactName),co=j.companyName||cleanCo(j.company);
+  const v=mainFor(j)||j,c=ctc(j,v),em=firstEmail(c.contactEmail),first=String(c.contactName||"").split(/\s+/)[0],msg=em?emailBody(v.draft,c.contactName,{inbox:c.contactKind==="apply inbox"}):personal(v.draft,c.contactName),co=j.companyName||cleanCo(j.company);
   $("#fpos").textContent=`Role ${F.i+1} of ${F.q.length}`;
   el.innerHTML=`<article class="fcard">
     <div class="row"><span class="co">${esc(co)}</span>${j.score?`<span class="pill match">match ${j.score}/5</span>`:""}${isStaffing(j)?'<span class="pill">staffing / contract</span>':'<span class="pill">direct employer</span>'}${F.mark[j.id]?statusPill(F.mark[j.id]==="sent"?"messaged":"skipped"):""}</div>
@@ -435,7 +458,7 @@ function resumeChanges(master,tail){const M=rlines(master),T=rlines(tail);const 
   let h="",ul=false;rows.forEach(r=>{if(r.kind==="li"){if(!ul){h+="<ul>";ul=true}h+=`<li class="${r.tag}">${r.html}</li>`;return}if(ul){h+="</ul>";ul=false}
     h+=r.kind==="h4"?`<h4 class="${r.tag}">${r.html}</h4>`:r.kind==="h5"?`<h5 class="${r.tag}">${r.html}</h5>`:r.kind==="rhead"?`<p class="rhead ${r.tag}">${r.html}</p>`:`<p class="${r.tag}">${r.html}</p>`});
   if(ul)h+="</ul>";return{moved,html:`<div class="paper diffpaper"><div class="pname">${esc(NAME().toUpperCase())}</div><div class="pcontact">${esc(CONTACTLINE())}</div>${h}</div>`,changed,added,removed,total:changed+added+removed}}
-const CHG={};function changeCount(j){if(!goodTailored(j))return null;const k=j.id+"|"+String(j.resumeVersion).length+"|"+MASTER.length;if(!CHG[k])CHG[k]=resumeChanges(MASTER,j.resumeVersion);return CHG[k]}
+const CHG={};function changeCount(j){if(!goodTailored(j))return null;const k=j.id+"|"+String(j.resumeVersion).length+"|"+MASTER.length+"|"+NAME()+"|"+CONTACTLINE();if(!CHG[k])CHG[k]=resumeChanges(MASTER,j.resumeVersion);return CHG[k]}
 let RP=null,RPDIFF=true;
 function openPreview(id){RP=id;RPDIFF=true;$("#rprev").hidden=false;document.body.style.overflow="hidden";renderPreview();$("#rpclose").focus()}
 function closePreview(){RP=null;$("#rprev").hidden=true;document.body.style.overflow=""}
@@ -483,10 +506,10 @@ function contactLine(c){if(!c.contactEmail&&!c.contactName)return "";const src=c
 function primaryFor(j){
   if(j.closed)return "";
   const due=j.followUp&&j.followUp<=today();
-  if(["messaged","applied"].includes(j.status)&&j.followUpDraft&&due)return `<a class="btn primary" data-sent="${esc(j.id)}" data-after="followed" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(j.contactEmail),"Re: "+subjectFor(j),personal(j.followUpDraft,j.contactName)))}">Send follow-up</a>`;
+  if(["messaged","applied"].includes(j.status)&&j.followUpDraft&&due)return `<a class="btn primary" data-sent="${esc(j.id)}" data-after="followed" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(j.contactEmail),"Re: "+subjectFor(j),emailBody(j.followUpDraft,j.contactName,{followUp:true,inbox:j.contactKind==="apply inbox"})))}">Send follow-up</a>`;
   if((j.status||"new")==="new"){const m=mainFor(j),v=m||j;
     if(v.draft&&!isNote(v.draft)&&!draftProblems(v,v.draft).length){const c=ctc(j,v),first=String(c.contactName||"").split(/\s+/)[0];const em=firstEmail(c.contactEmail);
-      return em?`<a class="btn primary" data-sent="${esc(j.id)}" target="_blank" rel="noopener" href="${esc(gmailURL(em,subjectFor(v),personal(v.draft,c.contactName)))}" title="${esc(em)}">${first?"Email "+esc(first):c.contactKind==="apply inbox"?"Email their hiring inbox":"Email the recruiter"}</a>`
+      return em?`<a class="btn primary" data-sent="${esc(j.id)}" target="_blank" rel="noopener" href="${esc(gmailURL(em,subjectFor(v),emailBody(v.draft,c.contactName,{inbox:c.contactKind==="apply inbox"})))}" title="${esc(em)}">${first?"Email "+esc(first):c.contactKind==="apply inbox"?"Email their hiring inbox":"Email the recruiter"}</a>`
                :`<button class="btn primary" data-li="${esc(j.id)}" data-from="${esc(v.id)}" data-sent="${esc(j.id)}">Copy message + find ${first?esc(first):"manager"}</button>`}}
   return `<a class="btn" target="_blank" rel="noopener" href="${esc(j.url)}">Open posting</a>`;
 }
@@ -511,8 +534,8 @@ function jobCard(j){
     ${j.prep?`<details${dk(j.id+":prep",j.status==="interviewing")}><summary>Interview prep</summary><div class="draft">${esc(j.prep)}</div></details>`:""}
     ${(()=>{const m=mainFor(j),v=m||j;if(!v.draft||isNote(v.draft)||j.status==="skipped")return "";const bad=draftProblems(v,v.draft);if(bad.length)return `<div class="note" style="border-left:3px solid var(--bad)">Message held back until it passes checks (${esc(bad.join("; "))}). The next scan rewrites it.</div>`;return `<details${dk(j.id+":draft")}><summary>Outreach message${m?" (shared with "+esc(String(m.title).slice(0,40))+")":""}</summary>${m?`<div class="note">One message per company. This is the note for <b>${esc(m.title)}</b>, and it says you'd fit their other roles. Send it once.</div>`:""}<div class="draft">${esc(personal(v.draft,v.contactName))}</div>
       ${(()=>{const c=ctc(j,v);return `<div class="meta" style="margin-top:4px">Subject: ${esc(subjectFor(v))}${c.contactName?' · To: '+esc(c.contactName):''}${c.contactEmail?' &lt;'+esc(c.contactEmail)+'&gt;':''}${(c.contactSearch||v.contactSearch)?' · <a href="'+esc(c.contactSearch||v.contactSearch)+'" target="_blank" rel="noopener">'+(c.contactName&&c.contactSearch?'find '+esc(String(c.contactName).split(" ")[0])+' on LinkedIn':'find the hiring manager')+'</a>':''}</div>
-      <div class="row" style="margin-top:6px"><a class="btn" data-sent="${esc(j.id)}" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(c.contactEmail),subjectFor(v),personal(v.draft,c.contactName)))}">Email in Gmail</a><button class="btn" data-li="${esc(j.id)}" data-from="${esc(v.id)}" data-sent="${esc(j.id)}">Copy + open LinkedIn</button><button class="btn" data-copy="${esc(j.id)}" data-from="${esc(v.id)}">Copy</button></div>`})()}</details>`})()}
-    ${j.followUpDraft&&["messaged","applied"].includes(j.status)?`<details${dk(j.id+":fu")}><summary>Follow-up note (due ${esc(j.followUp||"")})</summary><div class="draft">${esc(personal(j.followUpDraft,j.contactName))}</div><div class="row" style="margin-top:6px"><a class="btn" data-sent="${esc(j.id)}" data-after="followed" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(j.contactEmail),"Re: "+subjectFor(j),personal(j.followUpDraft,j.contactName)))}">Email follow-up in Gmail</a></div></details>`:""}
+      <div class="row" style="margin-top:6px"><a class="btn" data-sent="${esc(j.id)}" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(c.contactEmail),subjectFor(v),emailBody(v.draft,c.contactName,{inbox:c.contactKind==="apply inbox"})))}">Email in Gmail</a><button class="btn" data-li="${esc(j.id)}" data-from="${esc(v.id)}" data-sent="${esc(j.id)}">Copy + open LinkedIn</button><button class="btn" data-copy="${esc(j.id)}" data-from="${esc(v.id)}">Copy</button></div>`})()}</details>`})()}
+    ${j.followUpDraft&&["messaged","applied"].includes(j.status)?`<details${dk(j.id+":fu")}><summary>Follow-up note (due ${esc(j.followUp||"")})</summary><div class="draft">${esc(personal(j.followUpDraft,j.contactName))}</div><div class="row" style="margin-top:6px"><a class="btn" data-sent="${esc(j.id)}" data-after="followed" target="_blank" rel="noopener" href="${esc(gmailURL(firstEmail(j.contactEmail),"Re: "+subjectFor(j),emailBody(j.followUpDraft,j.contactName,{followUp:true,inbox:j.contactKind==="apply inbox"})))}">Email follow-up in Gmail</a></div></details>`:""}
     <div class="resrow"><span class="meta"><b>Resume:</b> ${resumeLabel(j)}</span><button class="btn" data-rprev="${esc(j.id)}">Preview resume</button><button class="btn" data-pdf="${esc(j.id)}">Download PDF</button></div>
     ${j.coverLetter?(coverProblems(j,"coverLetter").length?`<div class="note" style="border-left:3px solid var(--bad)">Cover letter held back: ${esc(coverProblems(j,"coverLetter").join("; "))}. The next scan redoes it.</div>`:`<details${dk(j.id+":cl")}><summary>Cover letter</summary><div class="draft">${esc(j.coverLetter)}</div><div class="row" style="margin-top:6px"><button class="btn" data-clpdf="${esc(j.id)}">Download PDF</button><button class="btn" data-cl="${esc(j.id)}">Copy</button></div></details>`):""}
     ${j.whyCompany&&!coverProblems(j,"whyCompany").length?`<details${dk(j.id+":why")}><summary>"Why this company?" answer for the form</summary><div class="draft">${esc(j.whyCompany)}</div><div class="row" style="margin-top:6px"><button class="btn" data-why="${esc(j.id)}">Copy</button></div></details>`:""}
