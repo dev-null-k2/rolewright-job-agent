@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rolewright: an AI job-search agent on your Claude subscription</title>
+<meta name="description" content="Rolewright scans about 270 job boards twice a day, writes checked outreach from your own resume, tailors resumes and cover letters, and keeps a ten-minute daily tracker. It never sends anything for you.">
+<meta property="og:title" content="Rolewright">
+<meta property="og:description" content="An AI job-search agent that runs on your own Claude subscription. Open source, MIT.">
+<style>
+:root{--bg:#f7f5f0;--fg:#1d1b18;--mut:#5f5a52;--card:#fffdf8;--line:#e3ddd1;--acc:#b4532a;--acc2:#2f6b4f}
+@media (prefers-color-scheme:dark){:root{--bg:#141311;--fg:#ece8e1;--mut:#a39d93;--card:#1d1b18;--line:#34302a;--acc:#e07a4b;--acc2:#6cc09a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--acc)}
+.w{max-width:980px;margin:0 auto;padding:0 20px}
+header{padding:20px 0;border-bottom:1px solid var(--line)}
+header .w{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--fg);text-decoration:none}
+.logo span{color:var(--acc)}
+nav a{margin-left:18px;color:var(--mut);text-decoration:none;font-size:15px}
+nav a:hover{color:var(--fg)}
+.hero{padding:72px 0 48px}
+h1{font-size:clamp(32px,6vw,52px);line-height:1.08;letter-spacing:-.02em;margin:0 0 18px;max-width:16ch}
+.lede{font-size:19px;color:var(--mut);max-width:60ch;margin:0 0 28px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--line);color:var(--fg);background:var(--card)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:44px 0 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.stat b{display:block;font-size:26px;letter-spacing:-.02em}
+.stat span{color:var(--mut);font-size:14px}
+section{padding:48px 0;border-top:1px solid var(--line)}
+h2{font-size:28px;letter-spacing:-.01em;margin:0 0 8px}
+.sub{color:var(--mut);margin:0 0 28px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--mut);font-size:15px}
+.no{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.no .card{border-left:3px solid var(--acc2)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 16px 58px;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+ol.steps b{display:block}
+ol.steps span{color:var(--mut);font-size:15px}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid var(--line)}
+@media (max-width:760px){.grid,.no{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}nav a{margin:0 14px 0 0}.hero{padding:48px 0 32px}}
+</style>
+</head>
+<body>
+<header><div class="w">
+  <a class="logo" href="./">Role<span>wright</span></a>
+  <nav><a href="#features">Features</a><a href="#how">How it runs</a><a href="#setup">Set up</a><a href="https://github.com/dev-null-k2/rolewright-job-agent">GitHub</a></nav>
+</div></header>
+
+<main>
+<div class="w hero">
+  <h1>Your job search, done for you every morning.</h1>
+  <p class="lede">Rolewright is an open-source AI job-search agent that runs on your own Claude subscription. Twice a day it scans about 270 job boards, writes a message for every role that fits, finds the recruiter's published email and tailors your resume without inventing anything. You work through it in ten minutes. Nothing is ever sent unless you click.</p>
+  <div class="btns">
+    <a class="btn p" href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">Set it up in 15 minutes</a>
+    <a class="btn" href="https://github.com/dev-null-k2/rolewright-job-agent">View the code</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>~270</b><span>job boards scanned</span></div>
+    <div class="stat"><b>2&times;</b><span>scans a day</span></div>
+    <div class="stat"><b>0</b><span>invented facts allowed</span></div>
+    <div class="stat"><b>10 min</b><span>a day to work it</span></div>
+  </div>
+</div>
+
+<section id="features"><div class="w">
+  <h2>What it does</h2>
+  <p class="sub">Everything a disciplined job search needs, in one private tracker that lives in your Claude account.</p>
+  <div class="grid">
+    <div class="card"><h3>Finds roles</h3><p>Greenhouse, Lever, Ashby, Workday, big-tech career sites, Hacker News "Who is hiring", Dice and staffing sites, plus your LinkedIn and Indeed alert emails.</p></div>
+    <div class="card"><h3>Scores the fit</h3><p>Every role gets a 1&ndash;5 match against your resume with the reason. Strong matches come first.</p></div>
+    <div class="card"><h3>Writes from your facts</h3><p>A short, specific message per role, follow-ups, referral asks, cover letters and "Why this company?" answers.</p></div>
+    <div class="card"><h3>Checks every draft</h3><p>A checker blocks any number not on your resume, cliches, location or visa mentions and wrong signatures.</p></div>
+    <div class="card"><h3>Tailors your resume</h3><p>One per top role, with every change marked against your original. One click switches back.</p></div>
+    <div class="card"><h3>Finds the right person</h3><p>Uses only recruiter emails the posting publishes, after checking the mail server. Nothing is guessed.</p></div>
+    <div class="card"><h3>Today's 10</h3><p>Your best roles one at a time: email, copy to LinkedIn, skip with a reason, next. Press F to start.</p></div>
+    <div class="card"><h3>Watches your inbox</h3><p>An hourly read-only check updates statuses from recruiter replies and drafts your answer.</p></div>
+    <div class="card"><h3>Ask anything</h3><p>Search, explain and update the whole tracker in plain English, with a pipeline view and a weekly review.</p></div>
+  </div>
+</div></section>
+
+<section><div class="w">
+  <h2>What it will not do</h2>
+  <p class="sub">The guardrails are part of the design, not an afterthought.</p>
+  <div class="no">
+    <div class="card"><h3>Send anything for you</h3><p>No email, application or message goes out until you press Send.</p></div>
+    <div class="card"><h3>Scrape LinkedIn</h3><p>It never logs in to LinkedIn. Hiring posts come only from public web search.</p></div>
+    <div class="card"><h3>Answer work authorization</h3><p>Those questions are always yours to answer, on every form.</p></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="w">
+  <h2>How it runs</h2>
+  <p class="sub">No servers, no API keys, no extra bill. Everything runs inside your Claude account.</p>
+  <div class="grid">
+    <div class="card"><h3>The tracker</h3><p>A private Claude artifact (<code>app/rolewright.html</code>) with its own small database.</p></div>
+    <div class="card"><h3>The agent</h3><p>Three Claude scheduled tasks that follow <code>agent/RUNBOOK.md</code> and the Python scripts beside it.</p></div>
+    <div class="card"><h3>Your facts</h3><p><code>profile.json</code>, <code>profile.md</code> and <code>RESUME_MASTER.md</code> in a Claude Project. Nothing else is used.</p></div>
+  </div>
+</div></section>
+
+<section id="setup"><div class="w">
+  <h2>Set up in about 15 minutes</h2>
+  <p class="sub">You need a Claude plan with the desktop app, artifacts, scheduled tasks and the Gmail connector.</p>
+  <ol class="steps">
+    <li><b>Fill in your facts</b><span>Copy the three templates in <code>config/</code>: profile, strongest claims and your resume in markdown.</span></li>
+    <li><b>Create a Claude Project</b><span>Add the <code>agent/</code> files and your three facts files under a <code>rolewright/</code> folder.</span></li>
+    <li><b>Connect Gmail</b><span>Read-only. Rolewright never sends, labels or deletes mail.</span></li>
+    <li><b>Ask Claude to finish the setup</b><span>Paste the prompt from <a href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">SETUP.md</a>. It publishes the tracker, creates the scheduled tasks and runs the first scan.</span></li>
+  </ol>
+</div></section>
+</main>
+
+<footer><div class="w">
+  Built by <a href="https://github.com/dev-null-k2">Karthik Kasukurti</a> &middot; MIT license &middot; <a href="https://github.com/dev-null-k2/rolewright-job-agent">github.com/dev-null-k2/rolewright-job-agent</a>
+</div></footer>
+</body>
+</html>

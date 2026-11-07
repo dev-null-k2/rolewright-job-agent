@@ -5,6 +5,8 @@ writes a message for every role that fits, finds the recruiter's published email
 cover letter without inventing anything, and keeps a tracker you can work through in ten minutes a day.
 It never sends anything for you: every email and application goes out only when you click.
 
+**Website:** [dev-null-k2.github.io/rolewright-job-agent](https://dev-null-k2.github.io/rolewright-job-agent/)
+
 Built by [Karthik Kasukurti](https://github.com/dev-null-k2).
 
 ## What it does
@@ -71,6 +73,11 @@ See [SETUP.md](SETUP.md). In short: fill in your profile and resume, then ask Cl
 | `agent/h1b_sponsors.json` | Past H-1B filings by employer (public US Department of Labor data) |
 | `config/` | Templates for your profile, resume and application answers |
 | `scheduled_tasks/` | The three scheduled-task prompts |
+| `docs/` | The project website (GitHub Pages) |
+
+## Contributing
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and the
+[code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 MIT. See [LICENSE](LICENSE).

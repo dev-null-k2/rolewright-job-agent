@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Scripts compile
+        run: python -m py_compile agent/*.py
+      - name: Data and templates are valid JSON
+        run: |
+          for f in agent/h1b_sponsors.json config/*.json; do python -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; done
+      - name: LinkedIn post dating works
+        run: |
+          echo '[{"title":"Jane Doe on LinkedIn: We are hiring engineers","url":"https://www.linkedin.com/posts/jane-doe_hiring-activity-7300000000000000000-abcd","snippet":"#hiring"}]' > r.json
+          python agent/linkedin_posts.py r.json --days 100000 | python -c "import json,sys; d=json.load(sys.stdin); assert d['posts'], d"
