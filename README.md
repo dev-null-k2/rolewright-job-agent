@@ -58,8 +58,16 @@ Everything runs inside your Claude account:
 You need a Claude plan with the desktop app (Cowork or Claude Code), artifacts, scheduled tasks and the Gmail
 connector. Each scan uses your normal Claude usage.
 
-## Set up (about 15 minutes)
-See [SETUP.md](SETUP.md). In short: fill in your profile and resume, then ask Claude to set it up.
+## Set up (about 15 minutes, no coding)
+1. Download this repository (green **Code** button → **Download ZIP**) and unzip it.
+2. In the Claude desktop app connect **Gmail** (Settings → Connectors).
+3. Create a Claude Project called **Job search**.
+4. Start a Cowork task in that project, attach the unzipped folder and your resume, and paste the setup message
+   from [SETUP.md](SETUP.md). Claude asks a few questions, then builds your tracker, creates the scheduled scans and
+   runs the first one.
+
+LinkedIn, Indeed and Glassdoor come in through their job-alert emails, and your LinkedIn connections through
+LinkedIn's own data export. [SETUP.md](SETUP.md) shows exactly how, plus day-to-day use and troubleshooting.
 
 ## Repository layout
 | Path | What it is |

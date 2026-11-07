@@ -109,12 +109,13 @@ footer{padding:32px 0 48px;color:var(--mut);font-size:14px;border-top:1px solid 
 
 <section id="setup"><div class="w">
   <h2>Set up in about 15 minutes</h2>
-  <p class="sub">You need a Claude plan with the desktop app, artifacts, scheduled tasks and the Gmail connector.</p>
+  <p class="sub">You need a paid Claude plan with the desktop app and a Gmail account. No coding.</p>
   <ol class="steps">
-    <li><b>Fill in your facts</b><span>Copy the three templates in <code>config/</code>: profile, strongest claims and your resume in markdown.</span></li>
-    <li><b>Create a Claude Project</b><span>Add the <code>agent/</code> files and your three facts files under a <code>rolewright/</code> folder.</span></li>
-    <li><b>Connect Gmail</b><span>Read-only. Rolewright never sends, labels or deletes mail.</span></li>
-    <li><b>Ask Claude to finish the setup</b><span>Paste the prompt from <a href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">SETUP.md</a>. It publishes the tracker, creates the scheduled tasks and runs the first scan.</span></li>
+    <li><b>Download Rolewright</b><span>On GitHub click <b>Code &rarr; Download ZIP</b> and unzip it.</span></li>
+    <li><b>Connect Gmail</b><span>Claude desktop app &rarr; Settings &rarr; Connectors &rarr; Gmail. Read-only: Rolewright never sends, labels or deletes mail.</span></li>
+    <li><b>Create a Claude Project</b><span>Call it <b>Job search</b>. Leave it empty; Claude fills it.</span></li>
+    <li><b>Let Claude set it up</b><span>Start a Cowork task in that project, attach the folder and your resume, and paste the message from <a href="https://github.com/dev-null-k2/rolewright-job-agent/blob/main/SETUP.md">SETUP.md</a>. Claude asks a few questions, publishes your tracker, schedules the scans and runs the first one.</span></li>
+    <li><b>Optional: LinkedIn, Indeed, Glassdoor</b><span>Turn on their job-alert emails to the same Gmail and upload your LinkedIn connections export for warm intros. Rolewright never logs in to any job site.</span></li>
   </ol>
 </div></section>
 </main>
