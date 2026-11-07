@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+profile.json
+profile.md
+RESUME_MASTER.md
+jobs.json
+db/
+contacts_out/
+fails.json
+.DS_Store

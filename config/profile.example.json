@@ -1,0 +1,25 @@
+{
+  "name": "Your Name",
+  "email": "you@example.com",
+  "linkedin": "linkedin.com/in/your-handle",
+  "github": "github.com/your-handle",
+  "portfolioLink": "github.com/your-handle/your-best-project",
+  "tagline": "AI, software and data roles · New York, San Francisco Bay Area, US remote",
+  "timezone": "America/New_York",
+  "trackerUrl": "https://claude.ai/artifact/<filled in by setup>",
+  "scanTaskId": "<filled in by setup>",
+  "inboxTaskId": "<filled in by setup>",
+  "neverMention": ["the city you live in", "your state"],
+  "neverClaim": [],
+  "search": {
+    "queries": ["AI engineer", "applied AI", "forward deployed", "machine learning engineer", "generative AI", "agent",
+                "software engineer python", "data engineer", "backend engineer", "python developer", "full stack engineer",
+                "LLM", "ML engineer", "platform engineer"],
+    "diceLocations": ["New York, NY", "San Francisco, CA", "remote"],
+    "googleCities": [["New York", "New York, NY, USA"], ["San Francisco", "San Francisco, CA, USA"]],
+    "areas": [
+      ["NYC", "new york|nyc|\\bny\\b|brooklyn|jersey city"],
+      ["SF Bay Area", "san francisco|\\bsf\\b|bay area|palo alto|mountain view|menlo park|san mateo|redwood city|sunnyvale|san jose|oakland|berkeley|cupertino|santa clara"]
+    ]
+  }
+}

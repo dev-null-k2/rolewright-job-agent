@@ -1,0 +1,100 @@
+{
+ "updated": "",
+ "items": [
+  {
+   "id": "about",
+   "q": "Tell us about yourself / Professional summary",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "project",
+   "q": "Describe a challenging project you led / are most proud of",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "impact",
+   "q": "What is your biggest professional achievement / measurable impact?",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "llm",
+   "q": "Describe your experience with LLMs, agents or GenAI",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "data",
+   "q": "Describe your experience with data engineering / pipelines",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "customers",
+   "q": "Tell us about working directly with customers or stakeholders",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "failure",
+   "q": "Tell us about a time something went wrong and what you did",
+   "a": "",
+   "fillOnce": true,
+   "hint": "Write this one in your own words from a real moment (the Ask box can help you shape it). Nothing is made up for you."
+  },
+  {
+   "id": "years",
+   "q": "Years of professional experience",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "education",
+   "q": "Highest level of education",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "opensource",
+   "q": "Side projects / open source / portfolio",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "links",
+   "q": "LinkedIn / GitHub / portfolio links",
+   "a": "",
+   "hint": "Setup drafts this from your resume; edit it in your words."
+  },
+  {
+   "id": "salary",
+   "q": "Salary expectations",
+   "a": "",
+   "fillOnce": true,
+   "hint": "Fill this once with your number or range; it is then ready to copy into every form."
+  },
+  {
+   "id": "start",
+   "q": "Earliest start date / notice period",
+   "a": "",
+   "fillOnce": true,
+   "hint": "Fill this once (for example: two weeks after an offer)."
+  },
+  {
+   "id": "worksetup",
+   "q": "Onsite / hybrid / remote preference and relocation",
+   "a": "",
+   "fillOnce": true,
+   "hint": "Fill this once in your own words; it never goes into outreach."
+  },
+  {
+   "id": "workauth",
+   "q": "Work authorization / sponsorship questions",
+   "a": "",
+   "yours": true,
+   "hint": "Always answer these yourself on each form. Nothing here fills them in."
+  }
+ ]
+}
