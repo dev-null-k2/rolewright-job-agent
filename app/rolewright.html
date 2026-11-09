@@ -748,11 +748,21 @@ render();
   db=await window.claude?.use?.("db");
   if(!db){S.ready=true;S.err="Open this page in claude.ai, signed in, to load your pipeline.";render();return}
   const timer=setTimeout(()=>{if(!S.ready){S.err="Can't reach your saved data yet. It may be a slow connection.";render()}},10000);
+  /* The jobs collection is bigger than one read returns (about 1000 documents), so it is read in slices that each stay small:
+     the history (everything not new or skipped) on its own, skipped roles, and new roles split by the day they were found.
+     The slices are merged; a role that moves between slices is never shown twice. */
+  const onJobs=()=>{const parts={},n=7,d=k=>addDays(today(),-k),Q=db.collection("jobs");
+    const qs={skip:Q.where("status","==","skipped").limit(1000),new0:Q.where("status","==","new").where("found",">=",d(1)).limit(1000),
+      new1:Q.where("status","==","new").where("found","<",d(1)).where("found",">=",d(4)).limit(1000),new2:Q.where("status","==","new").where("found","<",d(4)).limit(1000),
+      hist:Q.where("status","not-in",["new","skipped"]).limit(1000)};
+    Object.entries(qs).forEach(([k,q])=>q.onSnapshot(s=>{parts[k]=s.docs.map(x=>({id:x.id,...x.data()}));const m=new Map();["skip","new2","new1","new0","hist"].forEach(p=>(parts[p]||[]).forEach(x=>m.set(x.id,x)));
+      S.jobs=[...m.values()];S.jobs.forEach(fixJob);if(Object.keys(parts).length===5){S.ready=true;if(!s.metadata.fromCache){clearTimeout(timer);S.err=""}}render()},
+      err=>{parts[k]=parts[k]||[];S.ready=true;S.err="Couldn't load part of your roles ("+(err&&err.code||"error")+"). Reload the page.";render()}))};
   const on=(col,key)=>db.collection(col).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));if(key==="jobs")S.jobs.forEach(fixJob);S.ready=true;if(!s.metadata.fromCache){clearTimeout(timer);S.err=""}render()},err=>{S.ready=true;S.err="Couldn't load "+col+".";render()});
   db.collection("network").onSnapshot(s=>{NET.rows=[];s.docs.forEach(d=>{(d.data().rows||[]).forEach(r=>NET.rows.push(r))});netIndex();const st=document.getElementById("netstat");if(st)st.textContent=NET.rows.length?NET.rows.length+" connections loaded":"";render()},()=>{});
   document.getElementById("netfile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;const rows=parseCSV(await f.text());const h=rows.findIndex(r=>r.includes("First Name")&&r.includes("Company"));if(h<0){toast("That doesn't look like LinkedIn's Connections.csv");return}const H=rows[h],ix=n=>H.indexOf(n);const out=rows.slice(h+1).filter(r=>r[ix("Company")]).map(r=>({n:(r[ix("First Name")]+" "+r[ix("Last Name")]).trim(),c:r[ix("Company")],p:r[ix("Position")]||"",u:r[ix("URL")]||""}));try{for(let i=0;i*400<out.length;i++)await db.doc("network/chunk-"+i).set({rows:out.slice(i*400,i*400+400),importedAt:today()});toast(out.length+" connections imported")}catch(err){toast("Import failed")}});
   db.doc("meta/resume").onSnapshot(d=>{MASTER=d.exists?(d.data().text||""):"";render()},()=>{});
-  on("jobs","jobs");on("contacts","contacts");on("posts","posts");on("hiringPosts","hposts");
+  onJobs();on("contacts","contacts");on("posts","posts");on("hiringPosts","hposts");
   db.doc("meta/profile").onSnapshot(d=>{S.profileOK=d.exists;applyProfile(d.exists?d.data():{});render()},()=>{});
   db.doc("meta/answers").onSnapshot(d=>{S.answers=d.exists?d.data():null;if(!document.activeElement||!document.activeElement.closest||!document.activeElement.closest("#answers"))renderAnswers()},()=>{});
   db.doc("meta/weekly").onSnapshot(s=>{S.weekly=s.exists?s.data():null;render()},()=>{});
