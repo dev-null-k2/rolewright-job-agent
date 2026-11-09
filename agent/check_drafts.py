@@ -109,6 +109,149 @@ def _words(t):
     return re.findall(r"[A-Za-z][A-Za-z0-9+#./&-]*|\d[\d,.]*[%+]?", t)
 
 
+
+# ---- One-page check: the same layout the tracker uses for the PDF (Carlito = Calibri metrics, sizes from the original PDF) ----
+_RWW = {"R": {"c": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ‒–—―‘’‚‛“”•…→≤≥", "w": [463, 667, 821, 1020, 1038, 1464, 1397, 452, 621, 621, 1020, 1020, 511, 627, 517, 791, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 548, 548, 1020, 1020, 1020, 949, 1831, 1185, 1114, 1092, 1260, 1000, 941, 1292, 1276, 516, 653, 1064, 861, 1751, 1322, 1356, 1058, 1378, 1112, 941, 998, 1314, 1162, 1822, 1063, 998, 959, 628, 791, 628, 1020, 1020, 596, 981, 1076, 866, 1076, 1019, 625, 964, 1076, 470, 490, 931, 470, 1636, 1076, 1080, 1076, 1076, 714, 801, 686, 1076, 925, 1464, 887, 927, 809, 644, 943, 644, 1020, 463, 667, 1020, 1038, 1020, 1038, 1020, 1020, 804, 1709, 824, 1049, 1020, 1038, 807, 694, 1020, 688, 685, 598, 1126, 1200, 517, 629, 504, 865, 1049, 1303, 1375, 1383, 949, 1185, 1185, 1185, 1185, 1185, 1185, 1563, 1092, 1000, 1000, 1000, 1000, 516, 516, 516, 516, 1279, 1322, 1356, 1356, 1356, 1356, 1356, 1020, 1359, 1314, 1314, 1314, 1314, 998, 1058, 1080, 981, 981, 981, 981, 981, 981, 1583, 866, 1019, 1019, 1019, 1019, 470, 470, 470, 470, 1076, 1076, 1080, 1080, 1080, 1080, 1080, 1020, 1084, 1076, 1076, 1076, 1076, 927, 1076, 927, 1038, 1020, 1854, 1854, 511, 511, 511, 511, 857, 857, 1020, 1414, 1854, 1020, 1020]}, "B": {"c": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ‒–—―‘’‚‛“”•…→≤≥", "w": [463, 667, 898, 1020, 1038, 1493, 1443, 478, 638, 638, 1020, 1020, 528, 627, 547, 880, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 565, 565, 1020, 1020, 1020, 949, 1840, 1241, 1148, 1084, 1291, 999, 940, 1305, 1292, 546, 678, 1120, 866, 1790, 1349, 1385, 1090, 1405, 1153, 968, 1014, 1337, 1211, 1856, 1128, 1064, 979, 665, 880, 665, 1020, 1020, 615, 1011, 1099, 857, 1099, 1031, 648, 971, 1099, 503, 523, 983, 503, 1666, 1099, 1101, 1099, 1099, 728, 817, 710, 1099, 969, 1526, 941, 970, 814, 704, 973, 704, 1020, 463, 667, 1020, 1038, 1020, 1038, 1020, 1020, 849, 1709, 852, 1103, 1020, 1038, 799, 701, 1020, 692, 688, 616, 1154, 1224, 548, 621, 517, 891, 1103, 1347, 1415, 1437, 949, 1241, 1241, 1241, 1241, 1241, 1241, 1588, 1084, 999, 999, 999, 999, 546, 546, 546, 546, 1309, 1349, 1385, 1385, 1385, 1385, 1385, 1020, 1394, 1337, 1337, 1337, 1337, 1064, 1090, 1136, 1011, 1011, 1011, 1011, 1011, 1011, 1587, 857, 1031, 1031, 1031, 1031, 503, 503, 503, 503, 1099, 1099, 1101, 1101, 1101, 1101, 1101, 1020, 1114, 1099, 1099, 1099, 1099, 970, 1099, 970, 1038, 1020, 1854, 1854, 528, 528, 528, 528, 891, 891, 1020, 1457, 1854, 1020, 1020]}, "I": {"c": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ‒–—―‘’‚‛“”•…→≤≥", "w": [463, 667, 821, 1020, 1038, 1464, 1397, 452, 621, 621, 1020, 1020, 511, 627, 517, 794, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 1038, 548, 548, 1020, 1020, 1020, 949, 1831, 1185, 1114, 1070, 1260, 1000, 941, 1292, 1276, 516, 653, 1064, 861, 1751, 1320, 1340, 1058, 1360, 1112, 926, 998, 1314, 1162, 1823, 1063, 998, 959, 628, 787, 628, 1020, 1020, 596, 1053, 1053, 852, 1053, 978, 625, 1053, 1053, 470, 490, 931, 470, 1620, 1053, 1051, 1053, 1053, 702, 797, 686, 1053, 913, 1464, 887, 916, 809, 644, 943, 644, 1020, 463, 667, 1020, 1038, 1020, 1038, 1020, 1020, 804, 1709, 882, 1049, 1020, 1038, 807, 694, 1020, 688, 685, 598, 1102, 1200, 517, 629, 504, 865, 1049, 1303, 1375, 1383, 949, 1185, 1185, 1185, 1185, 1185, 1185, 1563, 1070, 1000, 1000, 1000, 1000, 516, 516, 516, 516, 1279, 1320, 1340, 1340, 1340, 1340, 1340, 1020, 1347, 1314, 1314, 1314, 1314, 998, 1058, 1080, 1053, 1053, 1053, 1053, 1053, 1053, 1545, 852, 978, 978, 978, 978, 470, 470, 470, 470, 1076, 1053, 1051, 1051, 1051, 1051, 1051, 1020, 1084, 1053, 1053, 1053, 1053, 916, 1053, 916, 1038, 1020, 1854, 1854, 511, 511, 511, 511, 857, 857, 1020, 1413, 1854, 1020, 1020]}}
+_RWT = {k: dict(zip(v["c"], v["w"])) for k, v in _RWW.items()}
+_RWCONTACT = re.compile(r"[\w.+-]+@[\w-]+\.[a-z]{2,}|linkedin\.com/in/", re.I)
+_RWDATE = re.compile(r"((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+)?\d{4}\s*[\u2013\u2014-]\s*(((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+)?\d{4}|Present|Current|Now)|^\s*((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+)?\d{4}\s*$", re.I)
+
+
+def _rw_w(s, f, size):
+    t = _RWT[f]
+    return sum(t.get(ch, t["?"]) for ch in s) * size / 2048
+
+
+def _rw_clean(s):
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s or "")
+    s = re.sub(r"\*(.+?)\*", r"\1", s)
+    s = re.sub(r"[^\x20-\x7E\u00A0-\u00FF\u2010-\u2015\u2018-\u201D\u2022\u2026\u2192\u2264\u2265]", "", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _rw_parse(md):
+    out, sec, last, after = [], "", None, False
+    for l in (x.strip() for x in (md or "").split("\n")):
+        if not l or _RWCONTACT.search(l):
+            continue
+        if l.startswith("## "):
+            sec = l[3:].strip(); out.append({"k": "sec"}); last, after = None, False; continue
+        if not sec:
+            continue
+        S = sec.lower()
+        if re.match(r"^#{1,3} ", l):
+            t = _rw_clean(re.sub(r"^#+\s*", "", l)); sub = ""
+            m = re.match(r"^(.*?)\s*\(([^()]*)\)\s*$", t)
+            if m and not _RWDATE.search(m.group(2)):
+                t, sub = m.group(1), m.group(2)
+            elif m:
+                t = m.group(1) + " \u00b7 " + m.group(2)
+            parts = re.split(r"\s+[\u00b7|]\s+", t); dates = ""
+            if len(parts) > 1 and _RWDATE.search(parts[-1]):
+                dates = parts.pop()
+            last = {"k": "entry", "left": "  \u00b7  ".join(parts), "dates": dates, "sub": re.sub(r"\s+\|\s+", "  |  ", sub), "proj": "project" in S}
+            out.append(last); after = True; continue
+        if l.startswith("- "):
+            t = _rw_clean(l[2:]); after = False
+            m = re.match(r"^([^:]{1,40}):\s*(.*)$", t)
+            if "skill" in S and m:
+                out.append({"k": "skill", "runs": [(m.group(1) + ": ", "B"), (m.group(2), "R")]}); continue
+            if re.search(r"education|certif", S):
+                m2 = re.match(r"^(.*?)\s*\(([^()]*)\)\s*$", t)
+                body, dates = (m2.group(1), m2.group(2)) if m2 and _RWDATE.search(m2.group(2)) else (t, "")
+                p = re.split(r"\s+[\u2014\u2013]\s+", body)
+                out.append({"k": "edu", "runs": [(p[0], "B"), ("  \u2014  " + " \u2014 ".join(p[1:]) if len(p) > 1 else "", "R")], "dates": dates}); continue
+            out.append({"k": "bul", "s": t}); continue
+        t = _rw_clean(l)
+        m = re.match(r"^([^:]{1,40}):\s*(.*)$", t)
+        if "skill" in S and m:
+            out.append({"k": "skill", "runs": [(m.group(1) + ": ", "B"), (m.group(2), "R")]}); continue
+        if after and last and last["proj"]:
+            out.append({"k": "sub", "s": re.sub(r"\.$", "", t) + ("  |  " + last["sub"] if last["sub"] else "")}); last["sub"] = ""; after = False; continue
+        after = False; out.append({"k": "para", "s": t})
+    res = []
+    for b in out:
+        res.append(b)
+        if b["k"] == "entry" and b["sub"]:
+            res.append({"k": "sub", "s": b["sub"]})
+    return res
+
+
+def _rw_lines(runs, max_w, size):
+    toks = []
+    for s, f in runs:
+        for w in re.split(r"( +)", s):
+            if w:
+                toks.append((w, f, w.strip() == ""))
+    n, cur, w = 0, 0, 0.0
+    for s, f, sp in toks:
+        tw = _rw_w(s, f, size)
+        if sp and not cur:
+            continue
+        if not sp and cur and w + tw > max_w:
+            n += 1; cur, w = 0, 0.0
+        cur += 1; w += tw
+    return n + (1 if cur else 0)
+
+
+def resume_layout(md, k=1.0, fs=9.5):
+    """(pages, bottom of the last line in points) for a resume laid out like the original PDF."""
+    L, R, WR, BOT = 32, 580, 584, 764
+    ADV = {"para": 11.0, "bul": 10.65, "skill": 11.0, "sub": 11.0, "edu": 11.0, "entry": 11.0}
+    FIRST = {"para": 20.6, "skill": 15.2, "entry": 17.3, "edu": 16.1, "bul": 17.3, "sub": 17.3}
+
+    def gap(a, b):
+        if b == "sec": return 15.4
+        if b == "entry": return 14.2
+        if b == "sub": return 11.6 if a == "entry" else 12
+        if b == "para": return 11.6 if a in ("entry", "sub") else 12.4
+        if b == "bul": return 12.0 if a == "bul" else 11.5 if a == "sub" else 13.35
+        if b == "skill": return 12.15
+        if b == "edu": return 12.6
+        return 12
+    y, prev, sec_top, page = None, None, None, 0
+
+    def room(top, n):
+        nonlocal page
+        if top + (n - 1) * ADV["para"] + fs > BOT:
+            page += 1; return 36
+        return top
+    for b in _rw_parse(md):
+        if b["k"] == "sec":
+            top = 71.0 if y is None else y + gap(prev, "sec") * k
+            top = room(top, 3); sec_top = top; y = top; prev = "sec"; continue
+        if prev == "sec" and sec_top is not None:
+            top = sec_top + FIRST[b["k"]] * k; sec_top = None
+        else:
+            top = 71.0 if y is None else y + gap(prev, b["k"]) * k
+        adv = max(10.2, ADV[b["k"]] * k)
+        if b["k"] == "entry":
+            dw = _rw_w(b["dates"], "B", fs) + 12 if b["dates"] else 0
+            n = _rw_lines([(b["left"], "B")], R - L - dw, fs); top = room(top, n + 2)
+        elif b["k"] == "sub":
+            n = _rw_lines([(b["s"], "I")], WR - L, 8.5); top = room(top, n)
+        elif b["k"] == "para":
+            n = _rw_lines([(b["s"], "R")], WR - L, fs); top = room(top, n)
+        elif b["k"] == "bul":
+            n = _rw_lines([(b["s"], "R")], WR - 47.8, fs); top = room(top, n)
+        elif b["k"] == "skill":
+            n = _rw_lines(b["runs"], WR - L, fs); top = room(top, n)
+        else:
+            dw = _rw_w(b["dates"], "R", 8.5) + 12 if b["dates"] else 0
+            n = _rw_lines(b["runs"], R - L - dw, fs); top = room(top, n)
+        y = top + (n - 1) * adv; prev = b["k"]
+    return page + 1, (y or 0) + fs
+
+
+def resume_fit(md):
+    """(fits on one page, bottom in points). The tracker may tighten spacing down to 88%%; past that it holds the version back."""
+    for k in (1, .97, .94, .91, .88):
+        pages, bottom = resume_layout(md, k)
+        if pages == 1 and bottom <= 764:
+            return True, bottom
+    return False, resume_layout(md)[1]
+
+
 def check_resume(doc, master):
     """Problems with doc['resumeVersion'] versus the master resume: new numbers or new proper nouns/tools."""
     rv = doc.get("resumeVersion") or ""
@@ -116,7 +259,21 @@ def check_resume(doc, master):
         return []
     p = []
     # the name and contact lines are fixed, not claims
-    rv = "\n".join(l for l in rv.splitlines() if not re.search(r"@|linkedin\.com|^\W*" + re.escape(NAME) + r"\W*$", l, re.I))
+    rv = "\n".join(l for l in rv.splitlines() if not (_RWCONTACT.search(l) or re.search(r"^\W*" + re.escape(NAME) + r"\W*$", l, re.I)))
+    m_fit, m_bottom = resume_fit(master)
+    if m_fit:  # the master fits one page in the tracker's layout, so every tailored version must too
+        fit, bottom = resume_fit(rv)
+        if not fit:
+            p.append("runs past one page in the resume layout: drop the least relevant bullet")
+        elif bottom < m_bottom - 60:
+            p.append("much shorter than the original (bottom of the page left empty): keep every bullet from the master, reordered")
+    mh = [l.strip() for l in master.splitlines() if l.startswith("### ")]
+    for l in rv.splitlines():
+        if l.startswith("### ") and l.strip() not in mh:
+            p.append(f'job line changed from the master: "{l.strip()[4:60]}" (copy ### lines exactly)')
+    for h in mh:
+        if h not in [l.strip() for l in rv.splitlines()]:
+            p.append(f'job line missing: "{h[4:60]}"')
     for w in PROFILE.get("neverClaim", []):
         if re.search(r"\b" + re.escape(w) + r"\b", rv):
             p.append(f"resume lists {w} (you removed it from your resume)")

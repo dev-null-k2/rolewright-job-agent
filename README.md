@@ -183,4 +183,4 @@ Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), [S
 [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
-MIT. See [LICENSE](LICENSE). Built by [Karthik Kasukurti](https://github.com/dev-null-k2).
+MIT. See [LICENSE](LICENSE). The resume PDF uses the Carlito font (SIL Open Font License 1.1), embedded in the page. Built by [Karthik Kasukurti](https://github.com/dev-null-k2).
