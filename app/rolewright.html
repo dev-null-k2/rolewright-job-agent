@@ -143,6 +143,7 @@ details.more{display:flex;flex-wrap:wrap;gap:8px;align-items:center}details.more
   </section>
 
   <div class="seg" id="srcseg" role="group" aria-label="Who is hiring"><button type="button" data-src="all">All roles <span></span></button><button type="button" data-src="direct">Direct employers <span></span></button><button type="button" data-src="staffing">Staffing &amp; contract <span></span></button></div>
+  <div class="seg" id="emseg" role="group" aria-label="Email"><button type="button" data-em="all">Any contact <span></span></button><button type="button" data-em="has">Has email <span></span></button><button type="button" data-em="none">No email <span></span></button></div>
   <nav role="tablist">
     <button role="tab" id="t-today" aria-selected="true" data-tab="today">Today</button>
     <button role="tab" id="t-roles" aria-selected="false" data-tab="roles">Roles</button>
@@ -319,6 +320,8 @@ try{const t=localStorage.getItem("tab");if(t)document.querySelector(`[data-tab="
 let SHOW=150,TSHOW=50;
 function setSrc(v){SRC=["direct","staffing"].includes(v)?v:"all";try{localStorage.setItem("src",SRC)}catch(e){}SHOW=150;render()}
 document.getElementById("srcseg").addEventListener("click",e=>{const b=e.target.closest("[data-src]");if(b)setSrc(b.dataset.src)});
+function setEm(v){EM=["has","none"].includes(v)?v:"all";try{localStorage.setItem("em",EM)}catch(e){}SHOW=150;render()}
+document.getElementById("emseg").addEventListener("click",e=>{const b=e.target.closest("[data-em]");if(b)setEm(b.dataset.em)});
 document.addEventListener("change",async e=>{const t=e.target;if(!t.dataset||!t.dataset.skip||!t.value)return;try{await db.doc("jobs/"+t.dataset.skip).update({status:"skipped",skipReason:t.value,updatedAt:today()});toast("Skipped: "+t.value)}catch(err){toast("Couldn't save")}});
 ["#f-status","#f-visa","#f-q","#f-when","#f-fit","#f-area","#f-type","#f-sal","#f-h1b","#f-age","#f-sort"].forEach(s=>$(s).addEventListener("input",()=>{SHOW=150;render()}));
 document.addEventListener("click",e=>{if(e.target&&e.target.id==="tmore"){TSHOW+=50;render()}if(e.target&&e.target.id==="more"){SHOW+=150;render()}if(e.target&&e.target.id==="f-clear"){document.querySelectorAll(".filters select").forEach(s=>s.selectedIndex=0);$("#f-q").value="";SHOW=150;render()}});
@@ -330,7 +333,11 @@ const DIRECT_CO=/unitedhealth|fitch|unum|tyler tech|ccc intelligent|amphenol|red
 const STAFF_RX=/staff|recruit|talent|consult|solutions|infotech|technolog|\btech\b|systems|resources|associates|global|services|search|workforce|professionals|\btek|cyber|\bsoft\b|\bit\b|logic|minds|sphere|\bhire/i;
 function isStaffing(j){const t=j.type||"full time";if(t==="contract"||t==="contract-to-hire")return true;if(j.ats==="phenom"||/^(teks|acta|asto)-/.test(j.id||""))return true;const n=String(j.companyName||j.company||"");if(KNOWN_STAFF.test(n))return true;if(DIRECT_CO.test(n))return false;return (j.ats==="dice"||/^dice-/.test(j.id||""))&&STAFF_RX.test(n)}
 let SRC="all";try{SRC=localStorage.getItem("src")||"all"}catch(e){}
-const srcOK=j=>SRC==="all"||(SRC==="staffing")===isStaffing(j);
+let EM="all";try{EM=localStorage.getItem("em")||"all"}catch(e){}
+/* "Has email": the role (or the company's shared note) has at least one published address to send to. Cached per load of the roles. */
+let EMC={arr:null,m:new Map()};
+function hasEmail(j){if(EMC.arr!==S.jobs){EMC={arr:S.jobs,m:new Map()}}if(!EMC.m.has(j.id)){let v=contactsFor(j,j).length>0;if(!v&&j.sameAs){const m=S.jobs.find(x=>x.id===j.sameAs);v=!!m&&contactsFor(m,m).length>0}EMC.m.set(j.id,v)}return EMC.m.get(j.id)}
+const srcOK=j=>(SRC==="all"||(SRC==="staffing")===isStaffing(j))&&(EM==="all"||(EM==="has")===hasEmail(j));
 function visaPill(v){return v==="no-sponsorship"?'<span class="pill bad">says no sponsorship</span>':v==="sponsors"?'<span class="pill good">mentions sponsorship</span>':'<span class="pill warn">visa: ask</span>'}
 function statusPill(s){const m={new:"",messaged:"",applied:"good",interviewing:"good",skipped:"bad",rejected:"bad",offer:"good"};return `<span class="pill ${m[s]||""}">${esc(s||"new")}</span>`}
 
@@ -669,7 +676,9 @@ function render(){
   scanLine();
   const act=S.jobs.filter(j=>j.status!=="skipped");
   {const live=S.jobs.filter(j=>(j.status||"new")==="new"&&!j.closed),nd=live.filter(j=>!isStaffing(j)).length;
-   document.querySelectorAll("#srcseg [data-src]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.src===SRC);b.querySelector("span").textContent=S.ready?"("+(b.dataset.src==="all"?live.length:b.dataset.src==="direct"?nd:live.length-nd)+")":""})}
+   document.querySelectorAll("#srcseg [data-src]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.src===SRC);b.querySelector("span").textContent=S.ready?"("+(b.dataset.src==="all"?live.length:b.dataset.src==="direct"?nd:live.length-nd)+")":""});
+   const ls=live.filter(j=>SRC==="all"||(SRC==="staffing")===isStaffing(j)),he=ls.filter(hasEmail).length;
+   document.querySelectorAll("#emseg [data-em]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.em===EM);b.querySelector("span").textContent=S.ready?"("+(b.dataset.em==="all"?ls.length:b.dataset.em==="has"?he:ls.length-he)+")":""})}
   const dueC=S.contacts.filter(c=>c.followUpOn&&c.followUpOn<=today()&&!["replied","closed"].includes(c.status));
   const dueJ=S.jobs.filter(j=>["messaged","applied"].includes(j.status)&&j.followUp&&j.followUp<=today());
   const intv=S.jobs.filter(j=>j.status==="interviewing");
