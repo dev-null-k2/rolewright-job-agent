@@ -346,9 +346,15 @@ def verified_contact(emails, first="", last="", title="", company="", source="",
     def rank(e):
         _, lf, _, mine, routing = info(e)
         return 0 if mine else 1 if lf else 2 if not routing else 3
-    for e in sorted(cands, key=rank):
-        if not mx_ok(e.split("@")[1]):
-            continue
+    ok = [e for e in sorted(cands, key=rank) if mx_ok(e.split("@")[1])]
+    # every published, working address on the page (up to 3), so the page can offer one button per person
+    allc = []
+    for e in ok[:3]:
+        _, _, _, mine, routing = info(e)
+        allc.append({"email": e, "name": f"{first} {last}".strip() if first and (mine or (routing and len(ok) == 1)) else "",
+                     "title": title if first and mine else "", "kind": "apply inbox" if routing and not mine else "recruiter",
+                     "source": source, "url": profile})
+    for e in ok[:1]:
         local, lf, ll, mine, routing = info(e)
         # Name rules: the poster's own address or the posting's inbox -> poster's name; anything else -> no name ("Hi,").
         # One person's name never goes on another person's email.
@@ -356,7 +362,7 @@ def verified_contact(emails, first="", last="", title="", company="", source="",
         name = f"{first} {last}".strip() if first and (mine or routing) else ""
         return {"contactEmail": e, "contactName": name, "contactTitle": title if first and (mine or routing) else "",
                 "contactKind": "apply inbox" if routing and not mine else "recruiter", "contactSource": source,
-                "contactProfile": profile, "contactVerified": datetime.now(timezone.utc).date().isoformat()}
+                "contactProfile": profile, "contactVerified": datetime.now(timezone.utc).date().isoformat(), "contacts": allc}
     return {}
 
 

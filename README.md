@@ -119,7 +119,7 @@ troubleshooting.
   signatures.
 
 **Finds the right person**
-- The recruiter email the posting publishes, checked for a working mail server. Never a guess.
+- Up to three people to email per role, each address written on the posting, a public page or a recruiter's post, or found in your own Gmail, and checked for a working mail server. One "Email Jenny", "Email Prem" button each. Never a guess.
 - For big employers that don't publish emails, recruiters and hiring managers from public web search, for you to
   message on LinkedIn yourself.
 - People you already know at each company, from your LinkedIn connections export.
@@ -170,6 +170,7 @@ staffing-site filters are US-specific. Set your cities in the setup and it searc
 | `agent/RUNBOOK.md` | What the scheduled scan does, step by step |
 | `agent/scan_jobs.py` | The job-board scanner |
 | `agent/find_contacts.py` | Finds published recruiter emails and checks their mail servers |
+| `agent/check_contacts.py` | Checks addresses found on public pages or in Gmail before they go on a role |
 | `agent/linkedin_posts.py` | Dates and filters public LinkedIn posts found by web search |
 | `agent/check_drafts.py` | The checker every message, resume and cover letter must pass |
 | `agent/h1b_sponsors.json` | Past H-1B filings by employer (public US Department of Labor data) |

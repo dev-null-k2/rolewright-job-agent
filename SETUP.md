@@ -120,7 +120,7 @@ These are the instructions Claude follows when you paste the setup message. You 
      and `neverMention` with their city, state and anything else they listed. Set `resumeLocation` to the location line on their resume header, exactly as written (blank if it has none).
    Show the candidate a short summary and fix anything they correct.
 3. **Save to the project** with the Projects tool (`project_write`, explicit paths): `rolewright/RUNBOOK.md`,
-   `rolewright/scan_jobs.py`, `rolewright/find_contacts.py`, `rolewright/linkedin_posts.py`,
+   `rolewright/scan_jobs.py`, `rolewright/find_contacts.py`, `rolewright/check_contacts.py`, `rolewright/linkedin_posts.py`,
    `rolewright/check_drafts.py`, `rolewright/h1b_sponsors.json` (all from `agent/`), and `rolewright/profile.json`,
    `rolewright/profile.md`, `rolewright/RESUME_MASTER.md`. Use `local_path` for large files.
 4. **Publish the tracker**: publish `app/rolewright.html` as an artifact titled **Rolewright** with capabilities

@@ -72,8 +72,24 @@ def posting_text(i, j):
 def one(path):
     i = os.path.basename(path)[:-5]
     j = json.load(open(path))
-    if j.get("closed") or j.get("status", "new") not in ("new", "messaged", "applied", "interviewing") or j.get("contactEmail"):
+    if j.get("closed") or j.get("status", "new") not in ("new", "messaged", "applied", "interviewing"):
         return i, None
+    i, c = _one(i, j)
+    if not c:
+        return i, None
+    if j.get("contactEmail"):
+        # keep the contact already chosen; only add the other published addresses as extra buttons
+        have = {(x.get("email") or "").lower() for x in j.get("contacts") or []} | {j["contactEmail"].lower()}
+        extra = [x for x in c.get("contacts") or [] if x["email"].lower() not in have]
+        if not extra:
+            return i, None
+        first = {"email": j["contactEmail"], "name": j.get("contactName") or "", "title": j.get("contactTitle") or "",
+                 "kind": j.get("contactKind") or "recruiter", "source": j.get("contactSource") or "", "url": j.get("contactProfile") or ""}
+        return i, {"contacts": ([first] + [x for x in j.get("contacts") or [] if x.get("email", "").lower() != first["email"].lower()] + extra)[:3]}
+    return i, c
+
+
+def _one(i, j):
     if i.startswith("dice-") and j.get("url"):
         page = S.get_html(j["url"])
         if not page:
@@ -110,7 +126,7 @@ def main():
                 found += 1
             else:
                 none += 1
-    print(f"{found} jobs got a verified email; {none} more got the named recruiter (no email listed)")
+    print(f"{found} jobs got a verified email; {none} more got extra published addresses or a named recruiter")
 
 
 if __name__ == "__main__":
